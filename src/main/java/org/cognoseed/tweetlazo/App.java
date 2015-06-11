@@ -41,4 +41,25 @@ public class App {
         logger.trace("Starting the stream with args: {}", args);
         stream.filter(new FilterQuery(0, new long[] {}, args));
     }
+
+
+    /**
+     * Strips out adjacent duplicate characters.
+     */
+    public static String stripDuplicateAdjacents(String srcStr) {
+        if (srcStr == null || srcStr.length() == 0) return "";
+        String str = srcStr.toLowerCase();
+
+        StringBuilder buf = new StringBuilder();
+        char last = str.charAt(0);
+        buf.append(last);
+        for (int idx = 1; idx < str.length(); ++idx) {
+            char curr = str.charAt(idx);
+            if (last != curr) {
+                last = curr;
+                buf.append(last);
+            }
+        }
+        return buf.toString();
+    }
 }

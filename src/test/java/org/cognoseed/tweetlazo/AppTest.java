@@ -25,9 +25,11 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Rigourous Test :-)
+     * Tests a couple common cases of {@link org.cognoseed.tweetlazo.App#stripDuplicateAdjacents(String)}
      */
-    public void testApp() {
-        assertTrue(true);
+    public void testStripping() {
+        assertEquals("goal", App.stripDuplicateAdjacents("gooooooooooooaaaaaaaaaaaaaaaallllllllllllllll"));
+        assertEquals("nothing you can do for this one", App.stripDuplicateAdjacents("nothing you can do for this one"));
+        assertEquals("gol", App.stripDuplicateAdjacents("GOOOOOooooooOOOOOOOooooooooOOOOOOOOOOLLLLLLLLLLLLLL"));
     }
 }
