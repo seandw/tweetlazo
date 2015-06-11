@@ -1,4 +1,4 @@
 target/
 *.iml
 *.log
-application.properties
+twitter4j.properties

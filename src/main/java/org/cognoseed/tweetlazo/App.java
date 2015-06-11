@@ -1,16 +1,17 @@
 package org.cognoseed.tweetlazo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import twitter4j.*;
-import twitter4j.auth.AccessToken;
-
-import java.io.IOException;
-import java.util.Properties;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+
+    private static final Logger logger = LogManager.getLogger();
+
+    public static void main(String[] args) {
         StatusListener listener = new StatusListener() {
             public void onStatus(Status status) {
-                System.out.println(status.getId() + ": " + status.getText());
+                logger.debug("{}: {}", status.getId(), status.getText());
             }
 
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
@@ -26,22 +27,18 @@ public class App {
             }
 
             public void onStallWarning(StallWarning stallWarning) {
-                System.err.println("WARNING: " + stallWarning.getMessage());
+                logger.warn("STALL WARNING: {}", stallWarning.getMessage());
             }
 
             public void onException(Exception e) {
-                System.err.println("EXCEPTION: " + e.getMessage());
+                logger.error(e.getMessage());
             }
         };
 
-        Properties props = new Properties();
-        props.load(App.class.getResourceAsStream("/application.properties"));
-
         TwitterStream stream = new TwitterStreamFactory().getInstance();
-        stream.setOAuthConsumer(props.getProperty("oauth.consumerKey"), props.getProperty("oauth.consumerSecret"));
-        stream.setOAuthAccessToken(new AccessToken(props.getProperty("oauth.accessToken"), props.getProperty("oauth.accessTokenSecret")));
         stream.addListener(listener);
 
-        stream.filter(new FilterQuery(0, new long[] {}, new String[] {"#BRA", "#KOR"}));
+        logger.trace("Starting the stream with args: {}", args);
+        stream.filter(new FilterQuery(0, new long[] {}, args));
     }
 }
