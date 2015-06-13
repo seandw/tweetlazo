@@ -7,7 +7,6 @@ import akka.event.LoggingAdapter;
 import scala.concurrent.duration.Duration;
 import twitter4j.Status;
 
-import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class GoalCounter extends UntypedActor {
     private long nExtraLetters;
     private final Cancellable tick = getContext().system().scheduler().schedule(
             Duration.create(0, TimeUnit.MILLISECONDS),
-            Duration.create(5, TimeUnit.SECONDS),
+            Duration.create(10, TimeUnit.SECONDS),
             getSelf(), new Counts(), getContext().dispatcher(), null);
 
     public GoalCounter(String hashtag) {
@@ -67,11 +66,11 @@ public class GoalCounter extends UntypedActor {
         if (message instanceof Status) {
             boolean encounteredGoal = false;
             Status status = (Status) message;
-            String[] words = stripPunctuation(status.getText()).trim().split("\\s+");
+            String[] words = StringUtils.stripPunctuation(status.getText()).trim().split("\\s+");
             for (String word : words) {
-                String stripped = stripDuplicateAdjacents(word);
+                String stripped = StringUtils.stripDuplicateAdjacents(word);
                 if (GOAL_TRANSLATIONS.contains(stripped)) {
-                    logger.info("TWEET CONTAINS {}: {}", stripped, word);
+                    logger.debug("TWEET CONTAINS {}: {}", stripped, word);
                     encounteredGoal = true;
                     ++nGoals;
                     nExtraLetters += word.length() - stripped.length();
@@ -88,32 +87,4 @@ public class GoalCounter extends UntypedActor {
         }
     }
 
-    /**
-     * Strips out adjacent duplicate characters.
-     */
-    public static String stripDuplicateAdjacents(String srcStr) {
-        if (srcStr == null || srcStr.length() == 0) return "";
-        String str = srcStr.toLowerCase();
-
-        StringBuilder buf = new StringBuilder();
-        char last = str.charAt(0);
-        buf.append(last);
-        for (int idx = 1; idx < str.length(); ++idx) {
-            char curr = str.charAt(idx);
-            if (last != curr) {
-                last = curr;
-                buf.append(last);
-            }
-        }
-        return buf.toString();
-    }
-
-    /**
-     * Strips punctuation and accents.
-     */
-    public static String stripPunctuation(String srcStr) {
-        if (srcStr == null) return "";
-        String normalized = Normalizer.normalize(srcStr, Normalizer.Form.NFD);
-        return normalized.replaceAll("(?U)[\\p{Punct}\\p{InCombiningDiacriticalMarks}]", "");
-    }
 }
