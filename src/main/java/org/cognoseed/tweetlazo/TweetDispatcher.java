@@ -42,7 +42,7 @@ public class TweetDispatcher extends UntypedActor {
         logger.debug("Creating children for each hashtag...");
         for (String hashtag : hashtags) {
             String key = hashtag.substring(1).toLowerCase();
-            children.put(key, getContext().actorOf(Props.create(GoalCounter.class, key)));
+            children.put(key, getContext().actorOf(Props.create(GoalCounter.class, key), key));
         }
     }
 

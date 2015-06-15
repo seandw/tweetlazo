@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class GoalCounter extends UntypedActor {
 
     public static class Counts { }
-    public class CountsReply {
+    public static class CountsReply {
         public final long tweets;
         public final long goalTweets;
         public final long goals;
@@ -59,6 +59,8 @@ public class GoalCounter extends UntypedActor {
     @Override
     public void postStop() throws Exception {
         tick.cancel();
+        logger.info("Final counts for #" + hashtag + ": tweets - {}, goal tweets - {}, goals - {}, extra letters - {}",
+                nTweets, nGoalTweets, nGoals, nExtraLetters);
     }
 
     @Override
