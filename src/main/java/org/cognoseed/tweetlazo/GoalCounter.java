@@ -20,12 +20,14 @@ public class GoalCounter extends UntypedActor {
     public static class Counts { }
     public static class CountsReply {
         public final long tweets;
+        public final long retweets;
         public final long goalTweets;
         public final long goals;
         public final long extraLetters;
 
-        public CountsReply(long tweets, long goalTweets, long goals, long extraLetters) {
+        public CountsReply(long tweets, long retweets, long goalTweets, long goals, long extraLetters) {
             this.tweets = tweets;
+            this.retweets = retweets;
             this.goalTweets = goalTweets;
             this.goals = goals;
             this.extraLetters = extraLetters;
@@ -44,6 +46,7 @@ public class GoalCounter extends UntypedActor {
 
     private String hashtag;
     private long nTweets;
+    private long nRetweets;
     private long nGoalTweets;
     private long nGoals;
     private long nExtraLetters;
@@ -59,8 +62,9 @@ public class GoalCounter extends UntypedActor {
     @Override
     public void postStop() throws Exception {
         tick.cancel();
-        logger.info("Final counts for #" + hashtag + ": tweets - {}, goal tweets - {}, goals - {}, extra letters - {}",
-                nTweets, nGoalTweets, nGoals, nExtraLetters);
+        logger.info("Final counts for #" + hashtag + ": tweets - " + nTweets +
+                        ", retweets - {}, goal tweets - {}, goals - {}, extra letters - {}",
+                nRetweets, nGoalTweets, nGoals, nExtraLetters);
     }
 
     @Override
@@ -80,10 +84,12 @@ public class GoalCounter extends UntypedActor {
             }
             ++nTweets;
             if (encounteredGoal) ++nGoalTweets;
+            if (status.isRetweet()) ++nRetweets;
         } else if (message instanceof Counts) {
-            logger.info("Counts for #" + hashtag + ": tweets - {}, goal tweets - {}, goals - {}, extra letters - {}",
-                    nTweets, nGoalTweets, nGoals, nExtraLetters);
-            //getSender().tell(new CountsReply(nTweets, nGoalTweets, nGoals, nExtraLetters), getSelf());
+            logger.info("Counts for #" + hashtag + ": tweets - " + nTweets +
+                            ", retweets - {}, goal tweets - {}, goals - {}, extra letters - {}",
+                    nRetweets, nGoalTweets, nGoals, nExtraLetters);
+            //getSender().tell(new CountsReply(nTweets, nRetweets, nGoalTweets, nGoals, nExtraLetters), getSelf());
         } else {
             unhandled(message);
         }

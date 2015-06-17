@@ -9,10 +9,7 @@ import akka.japi.Creator;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Top of the tree of actors, this actor receives tweets from {@link TweetListener} and distributes the tweets to the
@@ -49,17 +46,19 @@ public class TweetDispatcher extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Status) {
-            Status status = (Status) message;
+            final Status status = (Status) message;
             logger.debug("{} : {}", status.getId(), status.getText());
-            Set<String> hashtags = new HashSet<>();
-            for (HashtagEntity hashtag : status.getHashtagEntities()) {
-                hashtags.add(hashtag.getText().toLowerCase());
-            }
-            for (String key : hashtags) {
-                if (children.containsKey(key)) {
-                    children.get(key).tell(status, getSelf());
-                }
-            }
+
+            // find the hashtags in the tweet that we're tracking, and forward the tweet to them. ONCE.
+            Arrays.stream(status.getHashtagEntities())
+                    .map(HashtagEntity::getText)
+                    .map(String::toLowerCase)
+                    .distinct()
+                    .filter(children::containsKey)
+                    .map(children::get)
+                    .forEach(ref -> ref.tell(status, getSelf()));
+        } else {
+            unhandled(message);
         }
     }
 }
