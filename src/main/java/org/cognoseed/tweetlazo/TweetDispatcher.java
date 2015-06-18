@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class TweetDispatcher extends UntypedActor {
 
-    private final LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
+    private final LoggingAdapter logger = Logging.getLogger(context().system(), this);
 
     public static Props props(final String[] args) {
         return Props.create(new Creator<TweetDispatcher>() {
@@ -27,8 +27,8 @@ public class TweetDispatcher extends UntypedActor {
         });
     }
 
-    private String[] hashtags;
-    private Map<String, ActorRef> children = new HashMap<>();
+    String[] hashtags;
+    Map<String, ActorRef> children = new HashMap<>();
 
     public TweetDispatcher(String[] hashtags) {
         this.hashtags = hashtags;
@@ -39,7 +39,7 @@ public class TweetDispatcher extends UntypedActor {
         logger.debug("Creating children for each hashtag...");
         for (String hashtag : hashtags) {
             String key = hashtag.substring(1).toLowerCase();
-            children.put(key, getContext().actorOf(Props.create(GoalCounter.class, key), key));
+            children.put(key, context().actorOf(Props.create(GoalCounter.class, key), key));
         }
     }
 
@@ -56,7 +56,7 @@ public class TweetDispatcher extends UntypedActor {
                     .distinct()
                     .filter(children::containsKey)
                     .map(children::get)
-                    .forEach(ref -> ref.tell(status, getSelf()));
+                    .forEach(ref -> ref.tell(status, self()));
         } else {
             unhandled(message);
         }

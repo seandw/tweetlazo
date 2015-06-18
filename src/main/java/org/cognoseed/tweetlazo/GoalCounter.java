@@ -42,18 +42,17 @@ public class GoalCounter extends UntypedActor {
             "mal"
     ));
 
-    private final LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
+    private final LoggingAdapter logger = Logging.getLogger(context().system(), this);
 
-    private String hashtag;
-    private long nTweets;
-    private long nRetweets;
-    private long nGoalTweets;
-    private long nGoals;
-    private long nExtraLetters;
-    private final Cancellable tick = getContext().system().scheduler().schedule(
-            Duration.create(0, TimeUnit.MILLISECONDS),
-            Duration.create(10, TimeUnit.SECONDS),
-            getSelf(), new Counts(), getContext().dispatcher(), null);
+    String hashtag;
+    long nTweets;
+    long nRetweets;
+    long nGoalTweets;
+    long nGoals;
+    long nExtraLetters;
+    final Cancellable tick = context().system().scheduler().schedule(
+            Duration.create(0, TimeUnit.MILLISECONDS), Duration.create(10, TimeUnit.SECONDS),
+            self(), new Counts(), context().dispatcher(), null);
 
     public GoalCounter(String hashtag) {
         this.hashtag = hashtag;
