@@ -12,7 +12,10 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         ActorSystem system = ActorSystem.create("Tweetlazo");
-        ActorRef dispatcher = system.actorOf(TweetDispatcher.props(args));
+        ActorRef dispatcher = system.actorOf(TweetDispatcher.props());
+        for (String hashtag : args) {
+            dispatcher.tell(new TweetDispatcher.WatchHashtag(hashtag), ActorRef.noSender());
+        }
 
         TwitterStream stream = new TwitterStreamFactory().getInstance();
         stream.addListener(new TweetListener(dispatcher));
