@@ -29,7 +29,7 @@ class GoalCounter(hashtag: String) extends Actor {
   import Utils._
 
   val log = Logging(context.system, this)
-  val tick = context.system.scheduler.schedule(0.seconds, 10.seconds, self, "tick")
+  val tick = context.system.scheduler.schedule(10.seconds, 10.seconds, self, "tick")
 
   var tweets = 0L
   var retweets = 0L
