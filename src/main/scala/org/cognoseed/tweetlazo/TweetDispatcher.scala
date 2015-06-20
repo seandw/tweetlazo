@@ -9,7 +9,7 @@ object TweetDispatcher {
   case class UnwatchHashtag(hashtag: String)
 
   def props(): Props =
-    Props(new TweetDispatcher((factory, key) => factory.actorOf(Props(classOf[GoalCounter], key), key)))
+    Props(new TweetDispatcher((factory, key) => factory.actorOf(GoalCounter.props(key), key)))
 
   def props(maker: (ActorRefFactory, String) => ActorRef): Props = Props(new TweetDispatcher(maker))
 }
@@ -19,13 +19,14 @@ object TweetDispatcher {
   */
 class TweetDispatcher(maker: (ActorRefFactory, String) => ActorRef) extends Actor {
   import TweetDispatcher._
+  import GoalCounter._
 
   val log = Logging(context.system, this)
   var children = Map.empty[String, ActorRef]
 
   def receive = {
     case tweet: Status =>
-      tweet.getHashtagEntities.map(_.getText.toLowerCase).distinct.map(children.get).foreach(_ foreach(_ ! tweet))
+      tweet.getHashtagEntities.map(_.getText.toLowerCase).distinct.map(children.get).foreach(_ foreach(_ forward tweet))
     case WatchHashtag(hashtag) =>
       val key = hashtag.toLowerCase
       children = children.updated(key, maker(context, key))
@@ -33,6 +34,7 @@ class TweetDispatcher(maker: (ActorRefFactory, String) => ActorRef) extends Acto
       val key = hashtag.toLowerCase
       children.get(key).foreach(context.stop)
       children = children - key
+    case msg: Counts => children.get(msg.hashtag.toLowerCase).foreach(_ forward msg)
   }
 
 }
