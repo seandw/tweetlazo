@@ -8,8 +8,11 @@ import twitter4j.Status
 
 object GoalCounter {
   case class Counts(hashtag: String)
+  case class CountsSinceLast(hashtag: String)
   case class CountsReply(hashtag: String, tweets: Long, retweets: Long, goalTweets: Long, goals: Long,
-                          extraLetters: Long)
+                         extraLetters: Long)
+  case class CountsSinceLastReply(hashtag: String, tweets: Long, retweets: Long, goalTweets: Long, goals: Long,
+                                  extraLetters: Long)
 
   lazy val GoalTranslations = Set(
     "goal",
@@ -36,6 +39,11 @@ class GoalCounter(hashtag: String) extends Actor {
   var goalTweets = 0L
   var goals = 0L
   var extraLetters = 0L
+  var last = CountsReply(hashtag, tweets, retweets, goalTweets, goals, extraLetters)
+
+  override def postStop() = {
+    tick.cancel()
+  }
 
   def receive = {
     case tweet: Status =>
@@ -54,6 +62,10 @@ class GoalCounter(hashtag: String) extends Actor {
       if (tweet.isRetweet) retweets += 1
       if (strippedWords.exists(GoalTranslations.contains)) goalTweets += 1
     case Counts(_) => sender() ! CountsReply(hashtag, tweets, retweets, goalTweets, goals, extraLetters)
+    case CountsSinceLast(_) =>
+      sender() ! CountsSinceLastReply(hashtag, tweets-last.tweets, retweets-last.retweets, goalTweets-last.goalTweets,
+        goals-last.goals, extraLetters-last.extraLetters)
+      last = CountsReply(hashtag, tweets, retweets, goalTweets, goals, extraLetters)
     case "tick" => log.info(s"Counts for #$hashtag - tweets: $tweets, retweets: $retweets, goal tweets: $goalTweets, "
                               + s"goals: $goals, extra letters: $extraLetters")
   }

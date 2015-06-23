@@ -35,6 +35,7 @@ class TweetDispatcher(maker: (ActorRefFactory, String) => ActorRef) extends Acto
       children.get(key).foreach(context.stop)
       children = children - key
     case msg: Counts => children.get(msg.hashtag.toLowerCase).foreach(_ forward msg)
+    case msg: CountsSinceLast => children.get(msg.hashtag.toLowerCase).foreach(_ forward msg)
   }
 
 }
