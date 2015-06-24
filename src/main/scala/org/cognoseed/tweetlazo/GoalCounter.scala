@@ -1,10 +1,11 @@
 package org.cognoseed.tweetlazo
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import akka.actor.{Props, Actor}
+import akka.actor.{Actor, Props}
 import akka.event.Logging
 import twitter4j.Status
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object GoalCounter {
   case class Counts(hashtag: String)
@@ -32,7 +33,7 @@ class GoalCounter(hashtag: String) extends Actor {
   import Utils._
 
   val log = Logging(context.system, this)
-  val tick = context.system.scheduler.schedule(10.seconds, 10.seconds, self, "tick")
+  val tick = context.system.scheduler.schedule(15.seconds, 15.seconds, self, "tick")
 
   var tweets = 0L
   var retweets = 0L

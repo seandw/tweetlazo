@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorRefFactory, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import org.cognoseed.tweetlazo.TweetDispatcher.WatchHashtag
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSuiteLike, BeforeAndAfterAll}
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 import twitter4j.{HashtagEntity, Status}
 
 class TweetDispatcherTestSuite extends TestKit(ActorSystem("TestSystem")) with FunSuiteLike with BeforeAndAfterAll

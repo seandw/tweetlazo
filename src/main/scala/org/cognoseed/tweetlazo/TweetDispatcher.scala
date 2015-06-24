@@ -1,6 +1,6 @@
 package org.cognoseed.tweetlazo
 
-import akka.actor.{ActorRefFactory, Props, ActorRef, Actor}
+import akka.actor.{Actor, ActorRef, ActorRefFactory, Props}
 import akka.event.Logging
 import twitter4j.Status
 
@@ -18,8 +18,8 @@ object TweetDispatcher {
   * correct children actors.
   */
 class TweetDispatcher(maker: (ActorRefFactory, String) => ActorRef) extends Actor {
-  import TweetDispatcher._
   import GoalCounter._
+  import TweetDispatcher._
 
   val log = Logging(context.system, this)
   var children = Map.empty[String, ActorRef]
