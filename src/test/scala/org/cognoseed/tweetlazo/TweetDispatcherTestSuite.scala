@@ -39,4 +39,20 @@ class TweetDispatcherTestSuite extends TestKit(ActorSystem("TestSystem")) with F
     }
   }
 
+  test("TweetDispatcher should ignore WatchHashtag messages for hashtags that are already being watched") {
+    /*
+      I know this will fail, but I want to figure out the best way to actually test for it. The maker function will fail
+      on a second call and throw a TestFailedException, but since it's thrown within the actor, things get icky.
+     */
+    pending
+  }
+
+  test("TweetDispatcher should ignore UnwatchHashtag messages for hashtags that aren't being watched") {
+    /*
+      Similarly, this wants to test that there are no exceptions thrown. The solution is probably making a parent actor
+      whose supervising strategy is to freak out at any exception.
+     */
+    pending
+  }
+
 }
