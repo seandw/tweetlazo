@@ -11,7 +11,7 @@ class GoalCounterTestSuite extends TestKit(ActorSystem("TestSystem")) with FunSu
   with ImplicitSender with MockFactory {
 
   override def afterAll(): Unit = {
-    system.shutdown()
+    shutdown(system)
   }
 
   trait CommonGoalCounterTest {

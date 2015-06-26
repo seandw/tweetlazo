@@ -29,7 +29,7 @@ class TweetDispatcher(maker: (ActorRefFactory, String) => ActorRef) extends Acto
       tweet.getHashtagEntities.map(_.getText.toLowerCase).distinct.map(children.get).foreach(_ foreach(_ forward tweet))
     case WatchHashtag(hashtag) =>
       val key = hashtag.toLowerCase
-      children = children.updated(key, maker(context, key))
+      if (!children.contains(key)) children = children.updated(key, maker(context, key))
     case UnwatchHashtag(hashtag) =>
       val key = hashtag.toLowerCase
       children.get(key).foreach(context.stop)
