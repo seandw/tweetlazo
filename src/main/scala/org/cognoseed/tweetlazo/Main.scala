@@ -13,9 +13,8 @@ import scalafx.application.JFXApp.PrimaryStage
 import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.Scene
 import scalafx.scene.chart.XYChart.{Data, Series}
-import scalafx.scene.chart.{NumberAxis, StackedAreaChart}
-import scalafx.scene.layout.{HBox, Priority}
-import scalafx.util.StringConverter
+import scalafx.scene.chart.{CategoryAxis, NumberAxis, StackedBarChart}
+import scalafx.scene.layout.{Priority, VBox}
 
 object Main extends JFXApp {
   import org.cognoseed.tweetlazo.GoalCounter._
@@ -26,36 +25,29 @@ object Main extends JFXApp {
   val charts = parameters.unnamed.map { hashtag =>
     dispatcher ! WatchHashtag(hashtag)
 
-    val tweetSeries = new Series[Number, Number] {
+    val tweetSeries = new Series[String, Number] {
       name = s"#$hashtag non-goal tweets"
     }
 
-    val goalSeries = new Series[Number, Number] {
+    val goalSeries = new Series[String, Number] {
       name = s"#$hashtag goal tweets"
     }
 
-    // TODO Replace with a more date-conscious axis
-    val dateAxis = new NumberAxis {
-      forceZeroInRange = false
-      tickLabelFormatter = StringConverter.toStringConverter { time =>
-        DateTimeFormatter.ofPattern("HH:mm").format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(time.longValue),
-          ZoneId.systemDefault))
-      }
-    }
-
-    val chart = new StackedAreaChart(dateAxis, new NumberAxis) {
+    val chart = new StackedBarChart(new CategoryAxis, new NumberAxis) {
       data = Seq(goalSeries.delegate, tweetSeries.delegate)
-      maxWidth = Double.MaxValue
+      categoryGap = 1
+      maxHeight = Double.MaxValue
+      vgrow = Priority.Always
     }
-    HBox.setHgrow(chart, Priority.Always)
 
-    val cancellable = system.scheduler.schedule(15.seconds, 15.seconds) {
+    val cancellable = system.scheduler.schedule(1.minute, 1.minute) {
       dispatcher.ask(CountsSinceLast(hashtag))(5.seconds).onSuccess {
-        case reply: CountsSinceLastReply => Platform.runLater {
-          val time = Instant.now.getEpochSecond
-          goalSeries.getData.add(Data(time, reply.goalTweets))
-          tweetSeries.getData.add(Data(time, reply.tweets-reply.goalTweets))
-        }
+        case reply: CountsSinceLastReply =>
+          val time = DateTimeFormatter.ofPattern("HH:mm").format(ZonedDateTime.now)
+          Platform.runLater {
+            goalSeries.getData.add(Data(time, reply.goalTweets))
+            tweetSeries.getData.add(Data(time, reply.tweets-reply.goalTweets))
+          }
       }
     }
 
@@ -68,7 +60,7 @@ object Main extends JFXApp {
 
   stage = new PrimaryStage {
     scene = new Scene {
-      root = new HBox {
+      root = new VBox {
         children = charts.map(_._1)
       }
     }
