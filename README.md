@@ -1,7 +1,7 @@
 # tweetlazo
 
 ![Example of tweetlazo](/example.png "An example of tweetlazo used to
- track a Chile/Uruguay match ending 1 - 0")
+ track 2/3 of a Chile/Peru match ending 2 - 1")
 
 tweetlazo is an akka-powered program that watches provided Twitter
 hashtags for activity. Since it is soccer-centric, its primary concern
