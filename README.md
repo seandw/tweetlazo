@@ -1,7 +1,6 @@
 # tweetlazo
 
-![Example of tweetlazo](/example.png "An example of tweetlazo used to
- track 2/3 of a Chile/Peru match ending 2 - 1")
+![Example of tweetlazo](/example.png "An example of tweetlazo used to track 2/3 of a Chile/Peru match ending 2 - 1")
 
 tweetlazo is an akka-powered program that watches provided Twitter
 hashtags for activity. Since it is soccer-centric, its primary concern
@@ -35,10 +34,7 @@ in soccer games. While the GUI only shows tweet volume and categorizes
 tweets in only non-goal and goal buckets, the system collects other
 information (like how many extra letters are in users' goal
 celebrations). In the future, it would be nice for that information to
-be exposed to the GUI as well, but also to track other events. In the
-example above, there are spikes not only for the one goal in the
-match, but also for the start and end of the two halves and the two
-red cards.
+be exposed to the GUI as well, but also to track other events.
 
 Oh, and more tests. Always more tests.
 
