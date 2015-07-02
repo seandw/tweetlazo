@@ -1,6 +1,6 @@
 package org.cognoseed.tweetlazo
 
-import java.time.ZonedDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 import org.cognoseed.tweetlazo.GoalCounter.CountsSinceLastReply
@@ -27,7 +27,7 @@ class TweetChart(val hashtag: String) extends StackedBarChart(new CategoryAxis, 
   vgrow = Priority.Always
 
   def update(counts: CountsSinceLastReply) = {
-    val time = DateTimeFormatter.ofPattern("HH:mm").format(ZonedDateTime.now)
+    val time = DateTimeFormatter.ofPattern("HH:mm").format(LocalTime.now)
     Platform.runLater {
       goalSeries.getData.add(Data(time, counts.goalTweets))
       tweetSeries.getData.add(Data(time, counts.tweets-counts.goalTweets))

@@ -1,5 +1,8 @@
 package org.cognoseed.tweetlazo
 
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
+
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import twitter4j.{FilterQuery, TwitterStreamFactory}
@@ -16,10 +19,11 @@ object Main extends JFXApp {
   import org.cognoseed.tweetlazo.TweetDispatcher._
 
   // TODO add a feature to end tracking at a specified time or duration
-  // TODO add a feature to start tracking at a specified time
-  val delay = parameters.named.get("delay") match {
-    case Some(duration) => duration.toLong.minutes
-    case None => 0.minutes
+  // prefer a specific start time to an amount of delay
+  val delay = (parameters.named.get("start"), parameters.named.get("delay")) match {
+    case (Some(time), _) => LocalTime.now.until(LocalTime.parse(time), ChronoUnit.SECONDS).seconds
+    case (None, Some(duration)) => duration.toLong.minutes
+    case (None, None) => 0.seconds
   }
 
   val system = ActorSystem.create("tweetlazo")
