@@ -1,6 +1,6 @@
 package org.cognoseed.tweetlazo
 
-import java.time.LocalTime
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.temporal.ChronoUnit
 
 import akka.actor.ActorSystem
@@ -21,7 +21,10 @@ object Main extends JFXApp {
   // TODO add a feature to end tracking at a specified time or duration
   // prefer a specific start time to an amount of delay
   val delay = (parameters.named.get("start"), parameters.named.get("delay")) match {
-    case (Some(time), _) => LocalTime.now.until(LocalTime.parse(time), ChronoUnit.SECONDS).seconds
+    case (Some(time), _) =>
+      val possibleTime = LocalTime.parse(time).atDate(LocalDate.now)
+      val actualTime = if (possibleTime.isAfter(LocalDateTime.now)) possibleTime else possibleTime.plusDays(1)
+      LocalDateTime.now.until(actualTime, ChronoUnit.SECONDS).seconds
     case (None, Some(duration)) => duration.toLong.minutes
     case (None, None) => 0.seconds
   }
