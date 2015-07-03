@@ -8,8 +8,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object GoalCounter {
-  case class Counts(hashtag: String)
-  case class CountsSinceLast(hashtag: String)
+  sealed trait CountOperation {
+    def hashtag: String
+  }
+  case class Counts(hashtag: String) extends CountOperation
+  case class CountsSinceLast(hashtag: String) extends CountOperation
+
+  // not sure if it's worth it to make a sealed trait for these
   case class CountsReply(hashtag: String, tweets: Long, retweets: Long, goalTweets: Long, goals: Long,
                          extraLetters: Long)
   case class CountsSinceLastReply(hashtag: String, tweets: Long, retweets: Long, goalTweets: Long, goals: Long,
