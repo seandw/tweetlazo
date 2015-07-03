@@ -27,6 +27,14 @@ implied.
 
     $ sbt "run hashtag hashtag ..."
 
+If you wish to delay start of stream capture, you can supply either
+`--delay=<# of minutes>` or `--start=<24-hour clock time>`. If you
+wish to end the stream capture at a specific time, you can supply
+`--end=<24-hour clock time>`. You can use one of `--delay`/`--start`
+and `--end` together in one invocation. For example:
+
+    $ sbt "run --start=15:50 --end=18:40 usa jpn"
+
 ## TODO
 
 tweetlazo was originally made to see how Twitter users react to goals
