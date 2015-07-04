@@ -1,7 +1,7 @@
 package org.cognoseed.tweetlazo
 
-import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 import akka.actor.ActorSystem
 import akka.pattern.ask
@@ -11,8 +11,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
+import scalafx.geometry.Side
 import scalafx.scene.Scene
-import scalafx.scene.layout.VBox
+import scalafx.scene.control.TabPane.TabClosingPolicy
+import scalafx.scene.control.{Tab, TabPane}
 
 object Main extends JFXApp {
   import org.cognoseed.tweetlazo.GoalCounter._
@@ -44,8 +46,13 @@ object Main extends JFXApp {
 
   stage = new PrimaryStage {
     scene = new Scene {
-      root = new VBox {
-        children = charts
+      root = new TabPane {
+        tabs = charts.map(chart => new Tab {
+          content = chart
+          text = s"#${chart.hashtag}"
+        })
+        side = Side.RIGHT
+        tabClosingPolicy = TabClosingPolicy.UNAVAILABLE
       }
     }
   }
