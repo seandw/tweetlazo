@@ -1,6 +1,6 @@
 # tweetlazo
 
-![Example of tweetlazo](/example.png "An example of tweetlazo used to track 2/3 of a Chile/Peru match ending 2 - 1")
+![Example of tweetlazo](/example.gif "An example of tweetlazo used to track the 2015 Women's World Cup final")
 
 tweetlazo is an akka-powered program that watches provided Twitter
 hashtags for activity. Since it is soccer-centric, its primary concern
